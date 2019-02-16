@@ -12,8 +12,22 @@
   ; thread last macro (i.e. we place the reduce function to the beginning + the last argument is @state/orders)
   ; (reduce + (map (fn [[id quant]] (* quant (get-in @state/gigs [id :price]))) @state/orders)))
 
+; // DIFFERENT WAYS TO WRITE FUNCTIONS
+; (defn greet-1 [name] (str "Hello " name))
+; (def greet-2 (fn [name] (str "Hello " name)))
+; (def greet-3 #(str "Hello " %))
+;
+; (def greet-4 (fn [name lastname] (str "Hello " name lastname)))
+; (def greet-5 #(str "Hello " %1 %2))
+; (greet-1 "Macek")
+; (greet-2 "Hasek")
+; (greet-3 "Mrozek")
+; (greet-4 "Shlobert" " Swobodloi")
+
 (defn orders
   []
+  (let [remove-from-order #(swap! state/orders dissoc %)
+        remove-all-orders #(reset! state/orders {})]
   [:aside
     (if (empty? @state/orders)
       [:div.empty
@@ -34,7 +48,7 @@
                 [:div.price (format-price (* (get-in @state/gigs [id :price]) quant))]
                 [:button.btn.btn--link.tooltip
                   {:data-tooltip "Remove"
-                   :on-click (fn [] (swap! state/orders dissoc id))}
+                   :on-click #(remove-from-order id)}
                    [:i.icon.icon--cross]]]])]
           [:div.total
             [:hr]
@@ -46,6 +60,6 @@
               [:button.btn.btn--link.tooltip
                 {:data-tooltip "Remove all"
                 ; the {} below is an empty map
-                 :on-click (fn [] (reset! state/orders {}))}
-                [:i.icon.icon-delete]]]
-        ]]])
+                 :on-click #(remove-all-orders)}
+                [:i.icon.icon--delete]]]
+        ]]]))
