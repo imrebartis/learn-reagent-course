@@ -3,4 +3,4 @@
   (defn format-price
     ; divide cents by 100
     [cents]
-    (str " €" (/ cents 100)))
+    (str (/ cents 100) "€"))
