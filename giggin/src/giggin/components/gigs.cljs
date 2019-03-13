@@ -1,12 +1,22 @@
 (ns giggin.components.gigs
   (:require [giggin.state :as state]
-            [giggin.helpers :refer [format-price]]))
+            [giggin.helpers :refer [format-price]]
+            [giggin.components.gig-editor :refer [gig-editor]]
+            [reagent.core :as r]))
 
 (defn gigs
   []
-  (let [add-to-order #(swap! state/orders update % inc)]
+  (let [modal (r/atom false)
+        values (r/atom {:id nil :title "" :desc "" :price 0 :img "" :sold-out false})
+        add-to-order #(swap! state/orders update % inc)]
     [:main
      [:div.gigs
+      [:button.add-gig
+        {:on-click #(reset! modal true)}
+        [:div.add__title
+          [:i.icon.icon--plus]
+          [:p "Add gig"]]]
+      [gig-editor modal values]
       (for [{:keys [id img title price desc]} (vals @state/gigs)]
         [:div.gig {:key id}
          [:img.gig__artwork {:src img :alt title}]
