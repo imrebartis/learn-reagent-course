@@ -1,8 +1,20 @@
 (ns giggin.api
-  (:require [ajax.core :refer [GET]]))
+  (:require [ajax.core :refer [GET]]
+            [giggin.state :as state]))
+
+(defn index-by
+  [key coll]
+  "Transform a collection to a map with a given key as a lookup value"
+  ;thread last macro, it's same as (into {} (map (juxt key identity) coll))
+   (->> coll
+        ; juxt turns objects into arrays,
+        ; that's why we need the into {}
+        ; (to get objects with a key (here :id) and another object as its value)
+        (map (juxt key identity))
+        (into {})))
 
 (defn handler [response]
-  (.log js/console response))
+  (reset! state/gigs (index-by :id response)))
 
 (defn error-handler [{:keys [status status-text]}]
   (.log js/console (str "something bad happened: " status " " status-text)))
