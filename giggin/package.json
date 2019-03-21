@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "create-react-class": "^15.6.3",
+    "firebase": "^4.13.1",
     "react": "^16.3.2",
     "react-dom": "^16.3.2"
   }
