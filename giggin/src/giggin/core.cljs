@@ -5,7 +5,8 @@
             [giggin.components.orders :refer [orders]]
             [giggin.components.footer :refer [footer]]
             [giggin.api :as api]
-            [giggin.fb.init :refer [firebase-init]]))
+            [giggin.fb.init :refer [firebase-init]]
+            [giggin.fb.db :refer [db-subscribe]]))
 
 (defn app
   []
@@ -17,8 +18,8 @@
 
 (defn ^:export main
   []
-  (api/fetch-gigs)
   (r/render
     [app]
     (.getElementById js/document "app"))
-    (firebase-init))
+    (firebase-init)
+    (db-subscribe ["gigs"]))
