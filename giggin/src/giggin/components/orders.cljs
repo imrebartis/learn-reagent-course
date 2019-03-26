@@ -9,7 +9,10 @@
   ; thread first macro (i.e. we place the reduce function to the end + the first argument is @state/orders)
   ; this is like a pipe transfromation: it takes @state/orders, it maps it over & then it reduces it
   (->> @state/orders
-      (map (fn [[id quant]] (* quant (get-in @state/gigs [id :price]))))
+      (map (fn [[id quant]]
+        (if (get-in @state/gigs [id :sold-out])
+         0
+         (* quant (get-in @state/gigs [id :price])))))
       (reduce + )))
   ; thread last macro (i.e. we place the reduce function to the beginning + the last argument is @state/orders)
   ; (reduce + (map (fn [[id quant]] (* quant (get-in @state/gigs [id :price]))) @state/orders)))
@@ -44,11 +47,15 @@
                   [:img {:src (get-in @state/gigs [id :img])
                          :alt (get-in @state/gigs [id :title])}]]
                  [:div.content
-                 ; string concatenation
-                  [:p.title (str (get-in @state/gigs [id :title]) " \u00D7 " quant)]]
+                  (if (get-in @state/gigs [id :sold-out])
+                    [:p.sold-out "Sold out"]
+                   ; string concatenation
+                    [:p.title (str (get-in @state/gigs [id :title]) " \u00D7 " quant)])]
                  [:div.action
+                  (if (get-in @state/gigs [id :sold-out])
+                    [:div.price (format-price 0)]
                   ; multiply price with quant
-                  [:div.price (format-price (* (get-in @state/gigs [id :price]) quant))]
+                    [:div.price (format-price (* (get-in @state/gigs [id :price]) quant))])
                   [:button.btn.btn--link.tooltip
                     {:data-tooltip "Remove"
                      :on-click #(remove-from-order id)}
